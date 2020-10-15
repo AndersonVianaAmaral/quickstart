@@ -1,0 +1,64 @@
+version: '3'
+
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  nginx:
+    build: 
+      context: .
+      dockerfile: Dockerfile-1_proxy
+    container_name: micro-videos-nginx
+    restart: always
+    tty: true
+    ports:
+        - "8000:80"
+    volumes:
+        - ./2_backend:/var/www
+    networks:
+        - app-network
+    depends_on:
+        - app
+  app:
+      build:
+        context: .
+        dockerfile: Dockerfile-2_backend
+      container_name: micro-videos-app
+      entrypoint:  dockerize -template ./1_backend_env/.env:.env -wait tcp://db:3306 -timeout 40s ./1_backend_env/entrypoint.sh
+      environment:
+        - _DB_HOST=db
+        - _DB_DATABASE=code_micro_videos
+        - _DB_USERNAME=root
+        - _DB_PASSWORD=root
+      volumes: 
+        - ./2_backend:/var/www
+      networks:
+        - app-network
+      depends_on:
+        - db
+        - redis
+  db:
+    build: 
+      context: .
+      dockerfile: Dockerfile-3_database
+    container_name: micro-videos-db
+    restart: always
+    tty: true
+    ports:
+      - "33006:3306"
+    volumes:
+      - ./3_database:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=code_micro_videos
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
+    networks:
+      - app-network
+  redis:
+    image: redis:alpine
+    container_name: micro-videos-redis
+    expose:
+        - 6379
+    networks:
+        - app-network
