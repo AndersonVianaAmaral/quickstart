@@ -12,7 +12,7 @@
 
 ## To Run
     WSL2
-        If you want to run in WLS2 is OK because this project was made in Ubuntu distro.
+        If you want to run in WLS2 you need to install VsCode Remote Extensions(by Microsoft).
     
     docker-compose up -d - To run without verbose
     
