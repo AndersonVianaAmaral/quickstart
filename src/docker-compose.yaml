@@ -25,7 +25,7 @@ services:
         context: .
         dockerfile: Dockerfile-2_backend
       container_name: micro-videos-app
-      entrypoint:  dockerize -template ./1_backend_env/.env:.env -wait tcp://db:3306 -timeout 40s ./1_backend_env/entrypoint.sh
+      entrypoint: dockerize -template ./1_backend_env/.env:.env -wait tcp://db:3306 -timeout 40s ./1_backend_env/entrypoint.sh
       environment:
         - _DB_HOST=db
         - _DB_DATABASE=code_micro_videos
