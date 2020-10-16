@@ -11,8 +11,7 @@
     - Dockerize: Used to configure await between containers when the application starts
 
 ## To Run
-    WSL2
-        If you want to run in WLS2 you need to install VsCode Remote Extensions(by Microsoft).
+    If you want to run in WLS2 you need to install VsCode Remote Extensions(by Microsoft).
     
     docker-compose up -d - To run without verbose
     
