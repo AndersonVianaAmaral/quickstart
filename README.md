@@ -9,6 +9,7 @@
     - Mysql: Used as a database only example
     - Redis: Used as a queue for microservices applications
     - Dockerize: Used to configure await between containers when the application starts
+    - Ide-Helper: Used to help the IDE productivit(only dev) 
 
 ## To Run
     If you want to run in WLS2 you need to install VsCode Remote Extensions(by Microsoft).
