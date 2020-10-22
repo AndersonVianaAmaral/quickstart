@@ -1,18 +1,18 @@
 <?php
 
-namespace Database\Factories\Models;
+namespace Database\Factories;
 
-use App\Models\Models\category;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class categoryFactory extends Factory
+class CategoryFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = category::class;
+    protected $model = Category::class;
 
     /**
      * Define the model's default state.
@@ -22,8 +22,8 @@ class categoryFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $faker->colorName,
-            'description' => rand(1,10) % 2 == 0 ? $faker->setence() : null
+            'name' => "nameXPTO",
+            'description' => "description"
         ];
     }
 }
