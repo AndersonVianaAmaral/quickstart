@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class CategoryTableSeeder extends Seeder
+class GenderSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +13,6 @@ class CategoryTableSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\Category::factory()->count(10)->create();
+        \App\Models\Gender::factory()->count(10)->create();
     }
 }
