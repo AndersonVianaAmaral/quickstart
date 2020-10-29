@@ -11,6 +11,7 @@ class Category extends Model
     use SoftDeletes;
     use \App\Models\Traits\Uuid;
     use HasFactory;
+    
     protected $fillable = ['name','description','is_active'];
     protected $dates = ['deleted_at'];
     protected $casts = [
