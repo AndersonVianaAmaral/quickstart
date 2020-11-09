@@ -56,4 +56,21 @@ class CategoryTest extends TestCase
         $this->assertEquals('test', $category->name);
         $this->assertEquals('test1', $category->description);
     }
+
+    public function testDelete(){
+        Category::create([ 'name'=> 'XPTO' ]);
+        Category::create([ 'name'=> 'XPTO1' ]);
+
+        $categories = Category::all();
+        $categories->first()->delete();
+
+        $this->assertEquals(1, $categories->where('deleted_at', null)->count());
+    }
+
+    public function testUUIDTrait(){
+        Category::create(['name'=>'test1']);
+        $item = Category::all()->first();
+        $explodedUuid = explode("-", $item->id);
+        $this->assertEquals(5,count($explodedUuid));
+    }
 }
