@@ -1,24 +1,25 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Models;
 
 use App\Models\Category;
-use App\Models\Gender;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class CategoryTest extends TestCase
 {
-    use DatabaseMigrations;
+    private $category;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->category = new Category();
+    }
 
     public function testFillableAttributes()
     {
-        Gender::create(['name' => 'test']);
-        
         $fillable = ['name','description','is_active'];
-        $category = new Category();
-        $this->assertEquals($fillable, $category->getFillable());
+        $this->assertEquals($fillable, $this->category->getFillable());
     }
 
     public function testIfUsingTraits()
@@ -34,26 +35,23 @@ class CategoryTest extends TestCase
 
     public function testCats()
     {
-        $casts = ['id' => 'string', 'deleted_at' => 'datetime'];
-        $category = new Category();
-        $this->assertEquals($casts, $category->getCasts());
+        $casts = ['id' => 'string', 'deleted_at' => 'datetime', 'is_active'=>'boolean'];
+        $this->assertEquals($casts, $this->category->getCasts());
     }
 
     public function testIncrementing()
     {
-        $category = new Category();
-        $this->assertFalse($category->incrementing);
+        $this->assertFalse($this->category->incrementing);
     }
 
     public function testDates()
     {
         $dates = ['created_at','updated_at', 'deleted_at'];
-        $category = new Category();
 
         foreach($dates as $date){
-            $this->assertContains($date, $category->getDates());
+            $this->assertContains($date, $this->category->getDates());
         }
         
-        $this->assertCount(count($dates),$category->getDates());
+        $this->assertCount(count($dates),$this->category->getDates());
     }
 }
