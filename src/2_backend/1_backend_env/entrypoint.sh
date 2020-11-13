@@ -3,5 +3,5 @@ dockerize -template ./1_backend_env/.env:.env -template ./1_backend_env/.env.tes
 chown -R www-data:www-data .
 composer install
 php artisan key:generate
-php artisan migrate
+php artisan migrate --seed
 php-fpm

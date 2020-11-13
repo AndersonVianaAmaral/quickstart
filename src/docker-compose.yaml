@@ -1,9 +1,12 @@
-version: '3'
+version: '3.8'
 
 networks:
   app-network:
     driver: bridge
-
+volumes:
+  sql_db_volume:
+    driver: local
+  
 services:
   nginx:
     build: 
@@ -40,20 +43,17 @@ services:
         - db
         - redis
   db:
-    build: 
-      context: .
-      dockerfile: Dockerfile-3_database
+    image: mysql
     container_name: micro-videos-db
     restart: always
     tty: true
     ports:
       - "33006:3306"
     volumes:
-      - ./3_database:/var/lib/mysql
-      - ./db_scripts:/docker-entrypoint-initdb.d
+      - sql_db_volume:/var/lib/mysql
+      - ./scripts:/docker-entrypoint-initdb.d
     environment:
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_USER=root
     networks:
       - app-network
   redis:
@@ -63,3 +63,9 @@ services:
         - 6379
     networks:
         - app-network
+  adminer:
+    image: adminer
+    ports:
+      - 8081:8080
+    networks:
+      - app-network
