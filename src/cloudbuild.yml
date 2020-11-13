@@ -9,9 +9,9 @@ steps:
   args: ['exec','-t','app','composer', 'install']
 
 - id: "Chown in /var/www"
-  name: "grc.io/cloud-builders/docker"
+  name: "gcr.io/cloud-builders/docker"
   args: ['exec','-u','root','-t','app','chown','-R','www-data:www-data','/var/www']
 
 - id: "Rodando PHPUnit"
-  name: "grc.io/cloud-builders/docker"
+  name: "gcr.io/cloud-builders/docker"
   args: ['exec','-t','app','php', '/var/www/vendor/bin/phpunit','-c','/var/www/phpunit.xml']
