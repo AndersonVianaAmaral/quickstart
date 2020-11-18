@@ -5,10 +5,11 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\Gender;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
+use Tests\Traits\TestValidations;
 
 class GenderControllerTest extends TestCase
 {
-    use DatabaseMigrations;
+    use DatabaseMigrations, TestValidations;
 
     public function MakeGender()
     {
@@ -48,28 +49,17 @@ class GenderControllerTest extends TestCase
     public function testValidatorData()
     {
         $response = $this->json('POST',route('genders.store'),[]);
-        
-        $response
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['name'])
-            ->assertJsonMissingValidationErrors(['is_active'])
-            ->assertJsonFragment([\Lang::get('validation.required',['attribute'=>'name'])]);
-        
-        $response = $this->json('POST',route('genders.store'),['name'=>str_repeat('a',254), 'is_active'=>'a']);
-        $response
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['is_active'])
-            ->assertJsonFragment([\Lang::get('validation.boolean',['attribute'=>'is active'])]);      
+        $this->assertInvalidationFields($response,['name'],'validation.required', []);
+        $response->assertJsonMissingValidationErrors(['is_active']);
 
-        $response = $this->json('PUT',route('genders.update',['gender'=>$this->MakeGender()->id]),['is_active'=>'a']);
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name','is_active'])
-            ->assertJsonFragment([
-                'errors' =>[
-                    'name' => [\Lang::get('validation.required',['attribute'=>'name'])],
-                    'is_active' => [\Lang::get('validation.boolean',['attribute'=>'is active'])]
-                ]
-            ]);
+        $response = $this->json('POST',route('genders.store'),['name'=>str_repeat('a',254), 'is_active'=>'a']);
+        $this->assertInvalidationFields($response,['is_active'],'validation.boolean', []);
+
+        $response = $this->json('PUT',route('genders.update',['gender'=>$this->MakeGender()->id]),['is_active'=>'a', 'name'=>'birrr']);
+        $this->assertInvalidationFields($response,['is_active'],'validation.boolean', []);
+
+        $response = $this->json('PUT',route('genders.update',['gender'=>$this->MakeGender()->id]),[]);
+        $this->assertInvalidationFields($response,['name'],'validation.required', []);
     }
 
     public function testSotre()
@@ -85,14 +75,14 @@ class GenderControllerTest extends TestCase
             ->assertJsonFragment([
                 'name' => 'test'
             ]);
-        $this->assertFalse($response->json('is_active')); 
+        $this->assertFalse($response->json('is_active'));
 
         $response = $this->json('POST', route('genders.store'),[
             'name' => 'test'
         ]);
 
         $gender = Gender::find($response->json('id'));
-        
+
         $response
             ->assertStatus(201)
             ->assertJson($gender->toArray());

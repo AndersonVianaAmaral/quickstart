@@ -5,11 +5,12 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
+use Tests\Traits\TestValidations;
 
 class CategoryControllerTest extends TestCase
 {
-    use DatabaseMigrations;
-    
+    use DatabaseMigrations, TestValidations;
+
     public function MakeCategory() {
         $category = Category::create(['name'=>'XPTO', 'is_active'=>true]);
         $category->refresh();
@@ -37,32 +38,21 @@ class CategoryControllerTest extends TestCase
             ->assertStatus(200)
             ->assertJson($category->toArray());
     }
-    
+
     public function testValidatorData()
     {
         $response = $this->json('POST',route('categories.store'),[]);
-        
-        $response
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['name'])
-            ->assertJsonMissingValidationErrors(['is_active'])
-            ->assertJsonFragment([\Lang::get('validation.required',['attribute'=>'name'])]);
-        
-        $response = $this->json('POST',route('categories.store'),['name'=>str_repeat('a',254), 'is_active'=>'a']);
-        $response
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['is_active'])
-            ->assertJsonFragment([\Lang::get('validation.boolean',['attribute'=>'is active'])]);      
+        $this->assertInvalidationFields($response, ['name'], 'validation.required', []);
+        $response->assertJsonMissingValidationErrors(['is_active']);
 
-        $response = $this->json('PUT',route('categories.update',['category'=>$this->MakeCategory()->id]),['is_active'=>'a']);
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name','is_active'])
-            ->assertJsonFragment([
-                'errors' =>[
-                    'name' => [\Lang::get('validation.required',['attribute'=>'name'])],
-                    'is_active' => [\Lang::get('validation.boolean',['attribute'=>'is active'])]
-                ]
-            ]);
+        $response = $this->json('POST',route('categories.store'),['name'=>str_repeat('a',254), 'is_active'=>'a']);
+        $this->assertInvalidationFields($response, ['is_active'], 'validation.boolean', []);
+
+        $response = $this->json('PUT',route('categories.update',['category'=>$this->MakeCategory()->id]),['is_active'=>false]);
+        $this->assertInvalidationFields($response,['name'],'validation.required', []);
+
+        $response = $this->json('PUT',route('categories.update',['category'=>$this->MakeCategory()->id]),['is_active'=>'a', 'name'=>'birrr']);
+        $this->assertInvalidationFields($response,['is_active'],'validation.boolean', []);
     }
 
     public function testSotre()
@@ -78,14 +68,14 @@ class CategoryControllerTest extends TestCase
             ->assertJsonFragment([
                 'name' => 'test'
             ]);
-        $this->assertFalse($response->json('is_active')); 
+        $this->assertFalse($response->json('is_active'));
 
         $response = $this->json('POST', route('categories.store'),[
             'name' => 'test'
         ]);
 
         $category = Category::find($response->json('id'));
-        
+
         $response
             ->assertStatus(201)
             ->assertJson($category->toArray());
