@@ -7,10 +7,10 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
- 
+
     private $rules = [
-        'name' => 'required | max:255 | min:4',
-        'is_active' => 'boolean' 
+        'name' => 'required|max:255|min:4',
+        'is_active' => 'boolean'
     ];
 
     public function index()

@@ -5,44 +5,41 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\Gender;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
+use Tests\Traits\TestSaves;
 use Tests\Traits\TestValidations;
 
 class GenderControllerTest extends TestCase
 {
-    use DatabaseMigrations, TestValidations;
+    use DatabaseMigrations, TestValidations, TestSaves;
 
-    public function MakeGender()
+    private $gender;
+
+    protected function setUp(): void
     {
-        $gender = Gender::create(['name'=>'Gender X']);
-        $gender->refresh();
-        return $gender;
-    }
+        parent::setUp();
+        $this->gender = Gender::create(['name'=>'XPTO', 'is_active'=>true]);
+        $this->gender->refresh();
 
+    }
     public function testGetAll()
     {
-        $gender = $this->MakeGender();
         $response = $this->get(route('genders.index'));
         $response
             ->assertStatus(200)
-            ->assertJson([$gender->toArray()]);
+            ->assertJson([$this->gender->toArray()]);
     }
 
     public function testShow()
     {
-        $gender = $this->MakeGender();
-
-        $response = $this->get(route('genders.show',['gender'=>$gender->id]));
+        $response = $this->get(route('genders.show',['gender'=>$this->gender->id]));
 
         $response
             ->assertStatus(200)
-            ->assertJson($gender->toArray());
+            ->assertJson($this->gender->toArray());
     }
 
     public function testDelete(){
-        $this->MakeGender();
-        $gender = $this->MakeGender();
-
-        $response = $this->json('DELETE', route('genders.destroy',['gender'=> $gender->id]),[$gender]);
+        $response = $this->json('DELETE', route('genders.destroy',['gender'=> $this->gender->id]),[$this->gender]);
         $response->assertStatus(204);
     }
 
@@ -55,52 +52,38 @@ class GenderControllerTest extends TestCase
         $response = $this->json('POST',route('genders.store'),['name'=>str_repeat('a',254), 'is_active'=>'a']);
         $this->assertInvalidationFields($response,['is_active'],'validation.boolean', []);
 
-        $response = $this->json('PUT',route('genders.update',['gender'=>$this->MakeGender()->id]),['is_active'=>'a', 'name'=>'birrr']);
+        $response = $this->json('PUT',route('genders.update',['gender'=>$this->gender->id]),['is_active'=>'a', 'name'=>'birrr']);
         $this->assertInvalidationFields($response,['is_active'],'validation.boolean', []);
 
-        $response = $this->json('PUT',route('genders.update',['gender'=>$this->MakeGender()->id]),[]);
+        $response = $this->json('PUT',route('genders.update',['gender'=>$this->gender->id]),[]);
         $this->assertInvalidationFields($response,['name'],'validation.required', []);
     }
 
     public function testSotre()
     {
-        $gender = $this->MakeGender();
-        $response = $this->json('PUT', route('genders.update',['gender'=> $gender->id]),[
-            'name' => 'test',
-            'is_active' => false
-        ]);
+        $this->assertStore(['name'=>'test'],['name'=>'test', 'is_active' => true, 'deleted_at' => null]);
+        $this->assertStore(['name'=>'test', 'is_active' => false],['name'=>'test', 'is_active' => false, 'deleted_at' => null]);
+    }
 
-        $response
-            ->assertStatus(200)
-            ->assertJsonFragment([
-                'name' => 'test'
-            ]);
-        $this->assertFalse($response->json('is_active'));
+    public function testUpdate()
+    {
+        $this->assertInvalidationInUpdateAction(['name'=>''],'validation.required');
+        $this->assertInvalidationInUpdateAction(['is_active'=>'a'],'validation.boolean');
+        $this->assertUpdate(['name' => 'test'],['name' => 'test', 'is_active'=> true, 'deleted_at'=> null]);
+    }
 
-        $response = $this->json('POST', route('genders.store'),[
-            'name' => 'test'
-        ]);
+    protected function routeStore()
+    {
+        return route('genders.store');
+    }
 
-        $gender = Gender::find($response->json('id'));
+    protected function routeUpdate()
+    {
+        return route('genders.update',['gender'=> $this->gender->id]);
+    }
 
-        $response
-            ->assertStatus(201)
-            ->assertJson($gender->toArray());
-        $this->assertTrue($response->json('is_active'));
-
-        $response = $this->json('POST', route('genders.store'),[
-            'name' => 'test',
-            'is_active' => false
-        ]);
-
-        $gender = Gender::find($response->json('id'));
-
-        $response
-        ->assertStatus(201)
-        ->assertJson($gender->toArray())
-        ->assertJsonFragment([
-            'is_active' => false
-        ]);
-        $this->assertFalse($response->json('is_active'));
+    protected function model()
+    {
+        return Gender::class;
     }
 }
