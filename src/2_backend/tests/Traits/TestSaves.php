@@ -3,6 +3,10 @@ namespace Tests\Traits;
 
 trait TestSaves
 {
+    protected abstract function Model();
+    protected abstract function routeStore();
+    protected abstract function routeUpdate();
+
     protected function assertStore($sendData, $testDatabase, $testJsonData= null)
     {
         /** @var TestResponse $response**/
