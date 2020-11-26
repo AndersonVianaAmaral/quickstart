@@ -6,17 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Category extends Model
+class CastMember extends Model
 {
     use SoftDeletes;
     use \App\Models\Traits\Uuid;
     use HasFactory;
 
-    protected $fillable = ['name','description','is_active'];
+    protected $fillable = ['name','type'];
     protected $dates = ['deleted_at'];
     protected $casts = [
-        'id' => 'string',
-        'is_active'=> 'boolean'
+        'id' => 'string'
     ];
     public $incrementing = false;
 }

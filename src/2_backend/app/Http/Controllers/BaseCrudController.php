@@ -22,6 +22,12 @@ abstract class BaseCrudController extends Controller
         return $model;
     }
 
+    protected function findOrFail($id)
+    {
+        $model = $this->Model();
+        $key = (new $model)->getRouteKeyName();
+        return $this->Model()::where($key,$id)->firstOrFail();
+    }
     // public function show(Category $category)
     // {
     //     return $category;
