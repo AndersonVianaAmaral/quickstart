@@ -20,26 +20,26 @@ class CastMemberController extends Controller
     public function store(Request $request)
     {
         $this->Validate($request, $this->rules);
-        $category = CastMember::create($request->all());
-        $category->refresh();
-        return $category;
+        $castmember = CastMember::create($request->all());
+        $castmember->refresh();
+        return $castmember;
     }
 
-    public function show(CastMember $category)
+    public function show(CastMember $castmember)
     {
-        return $category;
+        return $castmember;
     }
 
-    public function update(Request $request, CastMember $category)
+    public function update(Request $request, CastMember $castmember)
     {
         $this->Validate($request, $this->rules);
-        $category->update($request->all());
-        return $category;
+        $castmember->update($request->all());
+        return $castmember;
     }
 
-    public function destroy(CastMember $category)
+    public function destroy(CastMember $castmember)
     {
-        $category->delete();
+        $castmember->delete();
         return response()->noContent();
     }
 }

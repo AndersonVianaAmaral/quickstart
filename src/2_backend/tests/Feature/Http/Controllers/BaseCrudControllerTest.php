@@ -67,7 +67,7 @@ class BaseCrudControllerTest extends TestCase
 
     public function testFindOrFailExceptionWhenIdIsInvalid()
     {
-        $this->expectException(ModelNotFoundException::class);
+        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
         $reflection = new ReflectionClass(BaseCrudController::class);
         $reflectionMethod = $reflection->getMethod('findOrFail');
         $reflectionMethod->setAccessible(true);
