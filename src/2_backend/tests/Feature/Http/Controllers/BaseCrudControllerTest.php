@@ -3,6 +3,7 @@
 namespace Tests\Feature\Http\Controllers;
 
 use App\Http\Controllers\BaseCrudController;
+use App\Models\Category;
 use Tests\stubs\Controller\CategoryControllerStub;
 use Tests\stubs\Model\CategoryStub;
 use Tests\TestCase;
@@ -73,5 +74,28 @@ class BaseCrudControllerTest extends TestCase
         $reflectionMethod->setAccessible(true);
         $result = $reflectionMethod->invokeArgs($this->controller, [0]);
         $this->assertInstanceOf(CategoryStub::class, $result);
+    }
+
+    public function testShow()
+    {
+        $category = CategoryStub::create(['name' => 'birrr', 'description'=> 'birrrrrrrrrr']);
+        $result = $this->controller->show($category->id);
+        $this->assertEquals($result->toArray(), CategoryStub::find(1)->toArray());
+    }
+
+    public function testUpdate()
+    {
+        $category = CategoryStub::create(['name' => 'birrr', 'description'=> 'birrrrrrrrrr']);
+        $request = \Mockery::mock(Request::class);
+        $request->shouldReceive('all')->once()->andReturn(['name' => 'anderson', 'description'=> 'birrrrrrrrrr']);
+        $result = $this->controller->update($request,$category->id);
+        $this->assertEquals($result->toArray(), CategoryStub::find(1)->toArray());
+    }
+
+    public function testDestroy()
+    {
+        $category = CategoryStub::create(['name' => 'birrr', 'description'=> 'birrrrrrrrrr']);
+        $result = $this->controller->destroy($category->id);
+        $this->createTestResponse($result)->assertStatus(204);
     }
 }

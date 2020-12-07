@@ -12,6 +12,9 @@ class CastMember extends Model
     use \App\Models\Traits\Uuid;
     use HasFactory;
 
+    const TYPE_DIRECTOR = 1;
+    const TYPE_ACTOR = 2;
+
     protected $fillable = ['name','type'];
     protected $dates = ['deleted_at'];
     protected $casts = [

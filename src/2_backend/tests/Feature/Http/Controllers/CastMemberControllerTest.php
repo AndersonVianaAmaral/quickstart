@@ -17,7 +17,7 @@ class CastMemberControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->castMember = CastMember::create(['name'=>'XPTO', 'type'=>1]);
+        $this->castMember = CastMember::create(['name'=>'XPTO', 'type'=>CastMember::TYPE_ACTOR]);
         $this->castMember->refresh();
 
     }
@@ -52,12 +52,12 @@ class CastMemberControllerTest extends TestCase
     public function testValidatorDataUpdate()
     {
         $this->assertInvalidationInUpdateAction(['name'=>''],'validation.required');
-        $this->assertUpdate(['name' => 'test'],['name' => 'test', 'deleted_at'=> NULL]);
+        $this->assertUpdate(['name' => 'test', 'type'=> CastMember::TYPE_ACTOR],['name' => 'test', 'deleted_at'=> NULL]);
     }
 
     public function testSotre()
     {
-        $this->assertStore(['name'=>'test'],['name'=>'test']);
+        $this->assertStore(['name'=>'test', 'type'=> CastMember::TYPE_ACTOR],['name'=>'test','type'=> CastMember::TYPE_ACTOR]);
     }
 
     public function testDelete()

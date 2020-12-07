@@ -13,7 +13,7 @@ class CastMemberFactory extends Factory
     {
         return [
             'name' => "nameXPTO",
-            'type' => 1
+            'type' => CastMember::TYPE_ACTOR
         ];
     }
 }

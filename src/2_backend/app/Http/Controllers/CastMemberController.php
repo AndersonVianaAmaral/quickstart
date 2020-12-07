@@ -9,7 +9,7 @@ class CastMemberController extends Controller
 {
     private $rules = [
         'name' => 'required|max:255|min:4',
-        'type' => 'smallInteger'
+        'type' => "required|in:1,2" /* . implode(',', [CastMember::TYPE_ACTOR,CastMember::TYPE_DIRECTOR])*/
     ];
 
     public function index()
