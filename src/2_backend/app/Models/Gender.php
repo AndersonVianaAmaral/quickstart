@@ -19,4 +19,8 @@ class Gender extends Model
         'is_active' => 'boolean'
     ];
     public $incrementing = false;
+
+    public function genders(){
+        return $this->belongsToMany(Gender::class);
+    }
 }
